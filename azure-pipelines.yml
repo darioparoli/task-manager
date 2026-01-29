@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-branches:
+  branches:
     include:
       - feature/*
       - main
@@ -15,7 +15,7 @@ variables:
   tag: '$(Build.BuildId)'
 
 stages:
-- stage: Build_&_Publish
+- stage: Build_Publish
   displayName: Build Image and publish to Azure
   jobs:
   - job: Build
