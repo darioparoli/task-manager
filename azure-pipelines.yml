@@ -12,11 +12,12 @@ resources:
 - repo: self
 
 variables:
+  repositoryName: azure-devops
   tag: '$(Build.BuildId)'
 
 stages:
 - stage: Build_Publish
-  displayName: Build Image and publish to Azure
+  displayName: Build Image and publish to Docker Hub
   jobs:
   - job: Build
     displayName: Build
@@ -24,12 +25,12 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - task: Docker@2
-      displayName: Build Docker Image
-      inputs:
-        command: build
-        dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-        tags: |
-          $(tag)
+      displayName: Build and publish Docker Image
+      containerRegistry: 'docker-hub-connection' # nome del service connection
+      repository: $(repositoryName)
+      command: 'buildAndPush'
+      Dockerfile: '**/Dockerfile'
+
 
 - stage: Deploy_Prod
   displayName: Deploy to Production
