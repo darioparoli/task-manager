@@ -3,10 +3,11 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- dev
-- test
-- main
-
+branches:
+    include:
+      - feature/*
+      - main
+      
 resources:
 - repo: self
 
@@ -14,8 +15,8 @@ variables:
   tag: '$(Build.BuildId)'
 
 stages:
-- stage: Build
-  displayName: Build image
+- stage: Build_&_Publish
+  displayName: Build Image and publish to Azure
   jobs:
   - job: Build
     displayName: Build
@@ -23,9 +24,20 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - task: Docker@2
-      displayName: Build an image
+      displayName: Build Docker Image
       inputs:
         command: build
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
           $(tag)
+
+- stage: Deploy_Prod
+  displayName: Deploy to Production
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  variables:
+  - group: variabili-prod # Nome del gruppo creato nella Library
+  jobs:
+  - job: Deploy
+    steps:
+    - script: |
+        echo "Deploying to $(environment_name)"
