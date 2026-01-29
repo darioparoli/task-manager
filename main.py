@@ -12,6 +12,8 @@ from datetime import datetime
 app = FastAPI(title="Task Manager", description="A simple task management API", version="1.0.0")
 
 # In-memory storage for tasks
+# NOTE: This simple implementation is not thread-safe and suitable for demo/development only.
+# For production use, consider using a database and proper concurrency handling.
 tasks_db = []
 task_id_counter = 1
 

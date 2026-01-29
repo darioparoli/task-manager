@@ -409,6 +409,9 @@
         
         // Utility functions
         function escapeHtml(text) {
+            if (text === null || text === undefined) {
+                return '';
+            }
             const map = {
                 '&': '&amp;',
                 '<': '&lt;',

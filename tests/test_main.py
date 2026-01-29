@@ -9,16 +9,15 @@ from main import app, tasks_db, task_id_counter
 @pytest.fixture
 def client():
     """Create a test client"""
-    # Reset the tasks database before each test
+    # Reset the tasks database and counter before each test
+    global task_id_counter
     tasks_db.clear()
+    task_id_counter = 1
     return TestClient(app)
 
 
 def test_create_task(client):
     """Test creating a new task"""
-    # Clear the database
-    tasks_db.clear()
-    
     # Create a new task
     response = client.post(
         "/api/tasks",
@@ -37,9 +36,6 @@ def test_create_task(client):
 
 def test_get_tasks(client):
     """Test getting all tasks"""
-    # Clear the database
-    tasks_db.clear()
-    
     # Create some tasks
     client.post("/api/tasks", json={"title": "Task 1"})
     client.post("/api/tasks", json={"title": "Task 2"})
@@ -57,9 +53,6 @@ def test_get_tasks(client):
 
 def test_get_single_task(client):
     """Test getting a single task by ID"""
-    # Clear the database
-    tasks_db.clear()
-    
     # Create a task
     create_response = client.post(
         "/api/tasks",
@@ -85,9 +78,6 @@ def test_get_nonexistent_task(client):
 
 def test_update_task(client):
     """Test updating a task"""
-    # Clear the database
-    tasks_db.clear()
-    
     # Create a task
     create_response = client.post(
         "/api/tasks",
@@ -118,9 +108,6 @@ def test_update_task(client):
 
 def test_delete_task(client):
     """Test deleting a task"""
-    # Clear the database
-    tasks_db.clear()
-    
     # Create a task
     create_response = client.post(
         "/api/tasks",
