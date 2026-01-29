@@ -12,7 +12,7 @@ resources:
 - repo: self
 
 variables:
-  repositoryName: azure-devops
+  repositoryName: darioparoli/azure-devops
   tag: '$(Build.BuildId)'
 
 stages:
