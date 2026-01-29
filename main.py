@@ -58,7 +58,7 @@ async def create_task(task: TaskCreate):
         created_at=datetime.now().isoformat()
     )
     
-    tasks_db.append(new_task.dict())
+    tasks_db.append(new_task.model_dump())
     task_id_counter += 1
     
     return new_task
@@ -80,7 +80,7 @@ async def update_task(task_id: int, task_update: Task):
         if task["id"] == task_id:
             task_update.id = task_id
             task_update.created_at = task["created_at"]
-            tasks_db[idx] = task_update.dict()
+            tasks_db[idx] = task_update.model_dump()
             return task_update
     raise HTTPException(status_code=404, detail="Task not found")
 
