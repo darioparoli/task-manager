@@ -2,10 +2,16 @@
 # Build a Docker image
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
+# avvia pipeline quando pull request completa
 trigger:
   branches:
     include:
-      - feature/*
+      - main
+
+# avvia pipeline all'arrivo di pull request verso main
+pr:
+  branches:
+    include:
       - main
       
 resources:
@@ -41,6 +47,11 @@ stages:
   - group: variabili-prod # Nome del gruppo creato nella Library
   jobs:
   - job: Deploy
+    displayName: Deployment su Azure Container App 
     steps:
-    - script: |
-        echo "Deploying to $(environment_name)"
+    - task: AzureContainerApps@1
+      inputs:
+        azureSubscription: 'azure-devops'
+        containerAppName: 'task-manager-app'
+        resourceGroup: 'Azure-DevOps-test'
+        imageToDeploy: docker.io/$(repositoryName):$(Build.BuildId)
