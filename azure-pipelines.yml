@@ -37,7 +37,6 @@ stages:
 - stage: Deploy_Prod
   displayName: Deploy to Production
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
-  environment: Production
   variables:
   - group: variabili-prod # Nome del gruppo creato nella Library
   jobs:
