@@ -13,7 +13,6 @@ resources:
 
 variables:
   repositoryName: darioparoli/task-manager
-  tag: '$(Build.BuildId)'
 
 stages:
 - stage: Build_Publish
@@ -31,7 +30,9 @@ stages:
         repository: $(repositoryName)
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile' 
-
+        tags: |
+          '$(Build.BuildId)'
+          latest
 
 - stage: Deploy_Prod
   displayName: Deploy to Production
