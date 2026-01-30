@@ -12,7 +12,8 @@ resources:
 - repo: self
 
 variables:
-  repositoryName: darioparoli/azure-devops
+  repositoryName: darioparoli/task-manager
+  tag: '$(Build.BuildId)'
 
 stages:
 - stage: Build_Publish
@@ -29,10 +30,7 @@ stages:
         containerRegistry: 'docker-hub-connection' # nome del service connection
         repository: $(repositoryName)
         command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-        tags: |
-          '$(Build.BuildId)'
-          latest
+        Dockerfile: '**/Dockerfile' 
 
 
 - stage: Deploy_Prod
