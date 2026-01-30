@@ -53,5 +53,6 @@ stages:
       inputs:
         azureSubscription: 'azure-devops'
         containerAppName: 'task-manager-app'
+        location: 'westeurope'
         resourceGroup: 'Azure-DevOps-test'
         imageToDeploy: docker.io/$(repositoryName):$(Build.BuildId)
