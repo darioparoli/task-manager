@@ -10,6 +10,7 @@ from typing import List, Optional
 from datetime import datetime
 
 app = FastAPI(title="Task Manager", description="A simple task management API", version="1.0.0")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # In-memory storage for tasks
 # NOTE: This simple implementation is not thread-safe and suitable for demo/development only.
@@ -95,11 +96,6 @@ async def delete_task(task_id: int):
             tasks_db.pop(idx)
             return {"message": "Task deleted successfully"}
     raise HTTPException(status_code=404, detail="Task not found")
-
-
-# Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
 
 if __name__ == "__main__":
     import uvicorn
