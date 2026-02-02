@@ -21,7 +21,35 @@ variables:
   repositoryName: darioparoli/task-manager
 
 stages:
+- stage: Test
+  displayName: Running test in python environment
+  jobs:
+  - job: RunPytest
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+      displayName: 'Setta la versione di Python'
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-azurepipelines # Plugin utile per visualizzare i risultati
+      displayName: 'Installa dipendenze'
+
+    - script: |
+        pytest --doctest-modules --junitxml=junit/test-results.xml
+      displayName: 'Esegui i Test'
+
+    # Task opzionale per vedere i risultati graficamente nel tab "Tests" di Azure
+    - task: PublishTestResults@2
+      condition: succeededOrFailed()
+      inputs:
+        testResultsFiles: '**/test-results.xml'
+        testRunTitle: 'Python Tests'
+
 - stage: Build_Publish
+  dependsOn: Test
   displayName: Build Image and publish to Docker Hub
   jobs:
   - job: Build
@@ -41,6 +69,7 @@ stages:
           latest
 
 - stage: Deploy_Prod
+  dependsOn: Test
   displayName: Deploy to Production
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
   variables:
