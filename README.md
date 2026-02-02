@@ -19,7 +19,11 @@ task-manager/
 ├── Dockerfile             # Dockerfile multi-stage
 ├── docker-compose.yml     # Configurazione Docker Compose
 ├── static/
-│   └── index.html        # Interfaccia web
+│   ├── index.html        # Interfaccia web
+│   ├── css/
+│   │    └── style.css
+│   └── js/
+│        └── script.js   
 ├── tests/
 │   ├── __init__.py
 │   └── test_main.py      # Unit test
