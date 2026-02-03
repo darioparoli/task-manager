@@ -91,6 +91,28 @@ function displayTasks(tasks) {
     `).join('');
 }
 
+// Delete completed tasks
+document.getElementById('deleteCompletedBtn').addEventListener('click', async () => {
+    if (!confirm('Sei sicuro di voler eliminare tutti i task completati?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/completed`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            loadTasks();
+        } else {
+            alert('Errore nell\'eliminazione dei task completati');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Errore di connessione');
+    }
+});
+
 // Toggle task completion
 async function toggleTask(taskId, completed) {
     try {

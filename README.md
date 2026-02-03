@@ -38,6 +38,7 @@ task-manager/
 - `GET /api/tasks/{id}` - Ottieni un task specifico
 - `PUT /api/tasks/{id}` - Aggiorna un task
 - `DELETE /api/tasks/{id}` - Elimina un task
+- `DELETE /api/tasks/completed` - Elimina i task completati
 
 ## Come Avviare l'Applicazione con Docker su Linux
 
