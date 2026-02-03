@@ -88,6 +88,17 @@ async def update_task(task_id: int, task_update: Task):
     raise HTTPException(status_code=404, detail="Task not found")
 
 
+@app.delete("/api/tasks/completed")
+async def delete_completed_tasks():
+    """Delete all completed tasks"""
+    global tasks_db
+    # Teniamo solo i task NON completati
+    completed_tasks = [task for task in tasks_db if task["completed"]]
+    tasks_db[:] = [task for task in tasks_db if not task["completed"]] 
+    
+    return {"message": f"Eliminati {len(completed_tasks)} task"}
+
+
 @app.delete("/api/tasks/{task_id}")
 async def delete_task(task_id: int):
     """Delete a task"""

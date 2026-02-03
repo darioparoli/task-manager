@@ -1,6 +1,7 @@
 """
 Unit tests for Task Manager API
 """
+from tabnanny import check
 import pytest
 from fastapi.testclient import TestClient
 from main import app, tasks_db, task_id_counter
@@ -131,3 +132,23 @@ def test_delete_nonexistent_task(client):
     """Test deleting a task that doesn't exist"""
     response = client.delete("/api/tasks/999")
     assert response.status_code == 404
+
+def test_delete_completed_tasks(client):
+    """Test deleting all completed tasks"""
+    # 1. Crea un task e prendi l'ID che decide il SERVER
+    post_res = client.post("/api/tasks", json={"title": "Test", "description": "Check"})
+    task = post_res.json()
+    task_id = task["id"]
+
+    # 2. Modifica lo stato a completed: True
+    task["completed"] = True
+    put_res = client.put(f"/api/tasks/{task_id}", json=task)
+    
+    # DEBUG: Se questo fallisce, il problema è nella PUT
+    assert put_res.status_code == 200 
+    assert put_res.json()["completed"] is True
+
+    # 3. Ora la DELETE dovrebbe trovare 1 task completato
+    del_res = client.delete("/api/tasks/completed")
+    assert del_res.json()["message"] == "Eliminati 1 task"
+
