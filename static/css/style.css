@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #c7ff38 0%, #41e341 100%);
     min-height: 100vh;
     padding: 20px;
 }
@@ -21,7 +21,7 @@ body {
 }
 
 header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #d9ff41 0%, #764ba2 100%);
     color: white;
     padding: 30px;
     text-align: center;
@@ -76,7 +76,7 @@ textarea {
 }
 
 button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #88fa3c 0%, #f2ff41 100%);
     color: white;
     border: none;
     padding: 12px 30px;
