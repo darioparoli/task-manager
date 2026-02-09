@@ -1,0 +1,16 @@
+[run]
+
+source = ./
+
+omit = 
+    */tests/*
+    .venv/*
+
+[report]
+# Non contare i file vuoti
+skip_empty = True
+# Mostra le righe mancanti nel terminale durante la build
+show_missing = True
+
+[html]
+extra_css = 
