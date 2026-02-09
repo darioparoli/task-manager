@@ -18,6 +18,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 tasks_db = []
 task_id_counter = 1
 
+ERR_NOT_FOUND = "Task not found"
+
 
 class Task(BaseModel):
     """Task model"""
@@ -73,7 +75,7 @@ async def get_task(task_id: int):
     for task in tasks_db:
         if task["id"] == task_id:
             return task
-    raise HTTPException(status_code=404, detail="Task not found")
+    raise HTTPException(status_code=404, detail=ERR_NOT_FOUND)
 
 
 @app.put("/api/tasks/{task_id}", response_model=Task)
@@ -85,7 +87,7 @@ async def update_task(task_id: int, task_update: Task):
             task_update.created_at = task["created_at"]
             tasks_db[idx] = task_update.model_dump()
             return task_update
-    raise HTTPException(status_code=404, detail="Task not found")
+    raise HTTPException(status_code=404, detail=ERR_NOT_FOUND)
 
 
 @app.delete("/api/tasks/completed")
@@ -106,8 +108,8 @@ async def delete_task(task_id: int):
         if task["id"] == task_id:
             tasks_db.pop(idx)
             return {"message": "Task deleted successfully"}
-    raise HTTPException(status_code=404, detail="Task not found")
+    raise HTTPException(status_code=404, detail=ERR_NOT_FOUND)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="127.0.0.1", port=8080)

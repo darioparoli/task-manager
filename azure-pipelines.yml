@@ -34,12 +34,12 @@ stages:
     - script: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pytest pytest-azurepipelines
+        pip install pytest pytest-cov pytest-azurepipelines
       displayName: 'Installa dipendenze'
 
     - script: |
-        pytest --doctest-modules --junitxml=junit/test-results.xml
-      displayName: 'Esegui i Test'
+        pytest --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-fail-under=60
+      displayName: 'Esegui Test e calcola Coverage'
 
     # Task opzionale per vedere i risultati graficamente nel tab "Tests" di Azure
     - task: PublishTestResults@2
@@ -47,6 +47,13 @@ stages:
       inputs:
         testResultsFiles: '**/test-results.xml'
         testRunTitle: 'Python Tests'
+
+    - task: PublishCodeCoverageResults@2
+      condition: succeededOrFailed()
+      inputs:
+        summaryFileLocation: '**/coverage.xml'
+        pathToSources: '$(Build.SourcesDirectory)'
+        failIfCoverageEmpty: true
 
 - stage: Build_Publish
   dependsOn: Test
