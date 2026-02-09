@@ -22,7 +22,7 @@ variables:
   variables:
   # Se il trigger è una Pull Request o un build manuale, usa il pool 'Sviluppo'
   # Altrimenti (es. merge su main), usa il pool 'Azure Pipelines'
-  ${{ if eq(variables['Build.Reason'], 'PullRequest') || eq(variables['Build.Reason'], 'Manual') }}:
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') or eq(variables['Build.Reason'], 'Manual') }}:
     poolName: 'local-ubuntu-vm'
   ${{ else }}:
     poolName: 'Azure Pipelines'
@@ -88,7 +88,7 @@ stages:
 - stage: Deploy_Test
   dependsOn: Test
   displayName: Deploy to Test Environment
-  condition: eq(variables['Build.Reason'], 'PullRequest') || eq(variables['Build.Reason'], 'Manual')
+  condition: eq(variables.poolName, 'local-ubuntu-vm') # Esegui solo se siamo in ambiente di sviluppo
   variables:
   #- group: variabili-test # Nome del gruppo creato nella Library
   jobs:
@@ -99,14 +99,14 @@ stages:
         docker stop task-manager-test || true
         docker rm task-manager-test || true
         docker pull docker.io/$(repositoryName):$(Build.BuildId)
-        docker run -d -p 8080:8080 --name task-manager-test docker
+        docker run -d -p 8080:8080 --name task-manager-test docker.io/$(repositoryName):$(Build.BuildId)
       displayName: 'Esegui container in locale'
 
 
 - stage: Deploy_Prod
   dependsOn: Test
   displayName: Deploy to Production
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  condition: eq(variables.poolName, 'Azure Pipelines') # Esegui solo se siamo in ambiente di produzione
   variables:
   - group: variabili-prod # Nome del gruppo creato nella Library
   jobs:
