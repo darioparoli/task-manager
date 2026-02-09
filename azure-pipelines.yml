@@ -19,6 +19,16 @@ resources:
 
 variables:
   repositoryName: darioparoli/task-manager
+  variables:
+  # Se il trigger è una Pull Request o un build manuale, usa il pool 'Sviluppo'
+  # Altrimenti (es. merge su main), usa il pool 'Azure Pipelines'
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') || eq(variables['Build.Reason'], 'Manual') }}:
+    poolName: 'local-ubuntu-vm'
+  ${{ else }}:
+    poolName: 'Azure Pipelines'
+
+pool:
+  name: $(poolName)
 
 stages:
 - stage: Test
@@ -74,6 +84,24 @@ stages:
         tags: |
           $(Build.BuildId)
           latest
+
+- stage: Deploy_Test
+  dependsOn: Test
+  displayName: Deploy to Test Environment
+  condition: eq(variables['Build.Reason'], 'PullRequest') || eq(variables['Build.Reason'], 'Manual')
+  variables:
+  #- group: variabili-test # Nome del gruppo creato nella Library
+  jobs:
+  - job: Deploy
+    displayName: Deployment Docker Locale
+    steps:
+    - script: |
+        docker stop task-manager-test || true
+        docker rm task-manager-test || true
+        docker pull docker.io/$(repositoryName):$(Build.BuildId)
+        docker run -d -p 8080:8080 --name task-manager-test docker
+      displayName: 'Esegui container in locale'
+
 
 - stage: Deploy_Prod
   dependsOn: Test
