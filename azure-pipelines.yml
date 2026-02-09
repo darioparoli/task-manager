@@ -20,15 +20,14 @@ resources:
 variables:
   repositoryName: darioparoli/task-manager
   variables:
-  # Se il trigger è una Pull Request o un build manuale, usa il pool 'Sviluppo'
-  # Altrimenti (es. merge su main), usa il pool 'Azure Pipelines'
-  ${{ if eq(variables['Build.Reason'], 'PullRequest') or eq(variables['Build.Reason'], 'Manual') }}:
-    poolName: 'local-ubuntu-vm'
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  ${{ if or(eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+    targetPool: 'local-ubuntu-vm'
   ${{ else }}:
-    poolName: 'Azure Pipelines'
+    targetPool: 'Azure Pipelines'
 
 pool:
-  name: $(poolName)
+  name: $(targetPool)
 
 stages:
 - stage: Test
@@ -88,8 +87,8 @@ stages:
 - stage: Deploy_Test
   dependsOn: Test
   displayName: Deploy to Test Environment
-  condition: eq(variables.poolName, 'local-ubuntu-vm') # Esegui solo se siamo in ambiente di sviluppo
-  variables:
+  condition: and(succeeded(), eq(variables.isMain, false)) # esegue solo se non sono in main
+  #variables:
   #- group: variabili-test # Nome del gruppo creato nella Library
   jobs:
   - job: Deploy
@@ -106,7 +105,7 @@ stages:
 - stage: Deploy_Prod
   dependsOn: Test
   displayName: Deploy to Production
-  condition: eq(variables.poolName, 'Azure Pipelines') # Esegui solo se siamo in ambiente di produzione
+  condition: and(succeeded(), eq(variables.isMain, true))
   variables:
   - group: variabili-prod # Nome del gruppo creato nella Library
   jobs:
