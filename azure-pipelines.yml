@@ -21,10 +21,10 @@ variables:
   repositoryName: darioparoli/task-manager
   variables:
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
-  ${{ if or(eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'PullRequest')) }}:
-    targetPool: 'local-ubuntu-vm'
-  ${{ else }}:
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
     targetPool: 'Azure Pipelines'
+  ${{ else }}:
+    targetPool: 'local-ubuntu-vm'
 
 pool:
   name: $(targetPool)
