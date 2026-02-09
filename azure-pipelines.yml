@@ -45,6 +45,7 @@ stages:
         python3 -m venv venv
         source venv/bin/activate
       displayName: 'Usa Python Locale'
+      condition: eq(variables.isMain, false)
 
     - script: |
         python -m pip install --upgrade pip
