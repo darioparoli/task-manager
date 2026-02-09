@@ -69,7 +69,7 @@ async def create_task(task: TaskCreate):
     return new_task
 
 
-@app.get("/api/tasks/{task_id}", response_model=Task)
+@app.get("/api/tasks/{task_id}", response_model=Task, responses={404: {"description": ERR_NOT_FOUND}})
 async def get_task(task_id: int):
     """Get a specific task by ID"""
     for task in tasks_db:
@@ -78,7 +78,7 @@ async def get_task(task_id: int):
     raise HTTPException(status_code=404, detail=ERR_NOT_FOUND)
 
 
-@app.put("/api/tasks/{task_id}", response_model=Task)
+@app.put("/api/tasks/{task_id}", response_model=Task, responses={404: {"description": ERR_NOT_FOUND}})
 async def update_task(task_id: int, task_update: Task):
     """Update a task"""
     for idx, task in enumerate(tasks_db):
@@ -101,7 +101,7 @@ async def delete_completed_tasks():
     return {"message": f"Eliminati {len(completed_tasks)} task"}
 
 
-@app.delete("/api/tasks/{task_id}")
+@app.delete("/api/tasks/{task_id}", responses={404: {"description": ERR_NOT_FOUND}})
 async def delete_task(task_id: int):
     """Delete a task"""
     for idx, task in enumerate(tasks_db):
