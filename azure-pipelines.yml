@@ -36,9 +36,15 @@ stages:
   - job: RunPytest
     steps:
     - task: UsePythonVersion@0
+      condition: eq(variables.isMain, true)
       inputs:
-        versionSpec: '3.14.3'
+        versionSpec: '3.x'
       displayName: 'Setta la versione di Python'
+    
+    - script: |
+        python3 -m venv venv
+        source venv/bin/activate
+      displayName: 'Usa Python Locale'
 
     - script: |
         python -m pip install --upgrade pip
