@@ -85,7 +85,7 @@ stages:
           latest
 
 - stage: Deploy_Test
-  dependsOn: Test
+  dependsOn: Build_Publish
   displayName: Deploy to Test Environment
   condition: and(succeeded(), eq(variables.isMain, false)) # esegue solo se non sono in main
   #variables:
@@ -103,7 +103,7 @@ stages:
 
 
 - stage: Deploy_Prod
-  dependsOn: Test
+  dependsOn: Build_Publish
   displayName: Deploy to Production
   condition: and(succeeded(), eq(variables.isMain, true))
   variables:
