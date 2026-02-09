@@ -19,6 +19,15 @@ resources:
 
 variables:
   repositoryName: darioparoli/task-manager
+  variables:
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+    targetPool: 'Azure Pipelines'
+  ${{ else }}:
+    targetPool: 'local-ubuntu-vm'
+
+pool:
+  name: $(targetPool)
 
 stages:
 - stage: Test
@@ -27,9 +36,15 @@ stages:
   - job: RunPytest
     steps:
     - task: UsePythonVersion@0
+      condition: eq(variables.isMain, true)
       inputs:
         versionSpec: '3.x'
       displayName: 'Setta la versione di Python'
+    
+    - script: |
+        python3 -m venv venv
+        source venv/bin/activate
+      displayName: 'Usa Python Locale'
 
     - script: |
         python -m pip install --upgrade pip
@@ -75,10 +90,28 @@ stages:
           $(Build.BuildId)
           latest
 
+- stage: Deploy_Test
+  dependsOn: Build_Publish
+  displayName: Deploy to Test Environment
+  condition: and(succeeded(), eq(variables.isMain, false)) # esegue solo se non sono in main
+  #variables:
+  #- group: variabili-test # Nome del gruppo creato nella Library
+  jobs:
+  - job: Deploy
+    displayName: Deployment Docker Locale
+    steps:
+    - script: |
+        docker stop task-manager-test || true
+        docker rm task-manager-test || true
+        docker pull docker.io/$(repositoryName):$(Build.BuildId)
+        docker run -d -p 8080:8080 --name task-manager-test docker.io/$(repositoryName):$(Build.BuildId)
+      displayName: 'Esegui container in locale'
+
+
 - stage: Deploy_Prod
-  dependsOn: Test
+  dependsOn: Build_Publish
   displayName: Deploy to Production
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  condition: and(succeeded(), eq(variables.isMain, true))
   variables:
   - group: variabili-prod # Nome del gruppo creato nella Library
   jobs:
